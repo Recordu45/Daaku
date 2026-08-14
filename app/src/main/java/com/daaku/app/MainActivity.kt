@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -160,14 +159,14 @@ fun DAAKUApp() {
                         containerColor = Color(0xFF080E19)
                     ) {
 
-                        val items = listOf(
+                        val navigationItems = listOf(
                             "Chats",
                             "Contacts",
                             "Profile",
                             "Settings"
                         )
 
-                        items.forEachIndexed { index, title ->
+                        navigationItems.forEachIndexed { index, title ->
 
                             NavigationBarItem(
 
@@ -215,6 +214,17 @@ fun ChatsScreen(
     onChatClick: (Chat) -> Unit
 ) {
 
+    var searchText by remember {
+        mutableStateOf("")
+    }
+
+    val filteredChats = chats.filter {
+        it.name.contains(
+            searchText,
+            ignoreCase = true
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -240,10 +250,6 @@ fun ChatsScreen(
             Spacer(
                 modifier = Modifier.height(16.dp)
             )
-
-            var searchText by remember {
-                mutableStateOf("")
-            }
 
             OutlinedTextField(
 
@@ -273,13 +279,6 @@ fun ChatsScreen(
                 ),
 
                 shape = RoundedCornerShape(18.dp)
-            )
-        }
-
-        val filteredChats = chats.filter {
-            it.name.contains(
-                searchText,
-                ignoreCase = true
             )
         }
 
@@ -415,8 +414,6 @@ fun ChatScreen(
         mutableStateOf("")
     }
 
-    val listState = rememberLazyListState()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -489,8 +486,6 @@ fun ChatScreen(
         }
 
         LazyColumn(
-
-            state = listState,
 
             modifier = Modifier
                 .weight(1f)
