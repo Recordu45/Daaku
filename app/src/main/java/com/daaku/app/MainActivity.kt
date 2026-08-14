@@ -3,6 +3,7 @@ package com.daaku.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,15 +12,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,6 +42,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -49,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val DaakuBackground = Color(0xFF050811)
+private val DaakuHeader = Color(0xFF080E19)
 private val DaakuCard = Color(0xFF0D1422)
 private val DaakuAccent = Color(0xFF00E5FF)
 private val DaakuText = Color(0xFFEAFBFF)
@@ -72,6 +81,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
 
         setContent {
             DAAKUApp()
@@ -131,7 +142,9 @@ fun DAAKUApp() {
             } else {
 
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.safeDrawing)
                 ) {
 
                     Box(
@@ -156,7 +169,7 @@ fun DAAKUApp() {
                     }
 
                     NavigationBar(
-                        containerColor = Color(0xFF080E19)
+                        containerColor = DaakuHeader
                     ) {
 
                         val navigationItems = listOf(
@@ -414,20 +427,32 @@ fun ChatScreen(
         mutableStateOf("")
     }
 
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(messages.size) {
+
+        if (messages.isNotEmpty()) {
+
+            listState.animateScrollToItem(
+                messages.lastIndex
+            )
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .imePadding()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
 
         Row(
 
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF080E19))
+                .background(DaakuHeader)
                 .padding(
-                    horizontal = 8.dp,
-                    vertical = 10.dp
+                    horizontal = 6.dp,
+                    vertical = 8.dp
                 ),
 
             verticalAlignment = Alignment.CenterVertically
@@ -447,7 +472,7 @@ fun ChatScreen(
             Box(
 
                 modifier = Modifier
-                    .size(42.dp)
+                    .size(44.dp)
                     .background(
                         DaakuAccent.copy(alpha = 0.12f),
                         CircleShape
@@ -473,7 +498,7 @@ fun ChatScreen(
                 Text(
                     text = chat.name,
                     color = DaakuText,
-                    fontSize = 16.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -487,13 +512,15 @@ fun ChatScreen(
 
         LazyColumn(
 
+            state = listState,
+
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
 
             contentPadding = PaddingValues(
                 horizontal = 14.dp,
-                vertical = 16.dp
+                vertical = 18.dp
             ),
 
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -509,8 +536,12 @@ fun ChatScreen(
 
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF080E19))
-                .padding(10.dp),
+                .background(DaakuHeader)
+                .imePadding()
+                .padding(
+                    horizontal = 12.dp,
+                    vertical = 10.dp
+                ),
 
             verticalAlignment = Alignment.CenterVertically
         ) {
